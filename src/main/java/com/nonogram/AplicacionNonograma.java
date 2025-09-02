@@ -8,7 +8,6 @@ import com.nonogram.vista.VistaNonogramaWindowBuilderNuevo;
 
 import javax.swing.SwingUtilities;
 
-
 public class AplicacionNonograma {
     
     public static void main(String[] args) {

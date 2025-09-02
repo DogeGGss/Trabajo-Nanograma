@@ -1,9 +1,5 @@
 # 🧩 Proyecto Nonograma - Juego de Lógica
 
-## ¿Qué es esto?
-
-Mirá, es un **juego de Nonograma** hecho en Java. Es uno de esos juegos de lógica donde tenés que completar una grilla siguiendo las pistas de los números que aparecen en las filas y columnas.
-
 ## ¿Cómo se juega?
 
 - **El objetivo**: Llenar la grilla correctamente siguiendo las pistas

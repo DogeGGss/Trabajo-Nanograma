@@ -15,9 +15,8 @@ import java.util.List;
 public class VistaNonogramaWindowBuilderNuevo extends JFrame implements VistaNonograma {
     
     private static final long serialVersionUID = 1L;
-    private static final int TAMAÑO_CELDA = 40;
-    private static final int ANCHO_PISTA = 25;
     private static final int ALTO_PISTA = 20;
+    private static final int ANCHO_PISTA_MINIMO = 15; // Ancho mínimo para las pistas
     
     private ControladorNonograma controlador;
     private JPanel panelGrilla;
@@ -43,8 +42,9 @@ public class VistaNonogramaWindowBuilderNuevo extends JFrame implements VistaNon
     private void inicializarComponentes() {
         setTitle("Nonograma - TP1 - Programación III - UNGS");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setResizable(false);
-        setSize(1920, 1080);
+        setResizable(false); // Tamaño fijo para estabilidad
+        // Tamaño fijo para el nivel más grande (Experto: 20x20)
+        setSize(1600, 1000);
         
         panelGrilla = new JPanel();
         panelGrilla.setLayout(new GridBagLayout());
@@ -89,10 +89,12 @@ public class VistaNonogramaWindowBuilderNuevo extends JFrame implements VistaNon
         
         NivelDificultad nivelActual = (NivelDificultad) selectorNivel.getSelectedItem();
         int tamañoActual = nivelActual.obtenerTamañoGrilla();
+        int columnasPistas = etiquetasPistasColumnas.length; // Usar el número real de columnas
         
-        for (int i = 0; i < 3; i++) {
+        // Agregar pistas de columnas (arriba de la grilla)
+        for (int i = 0; i < columnasPistas; i++) {
             for (int columna = 0; columna < tamañoActual; columna++) {
-                gbc.gridx = columna + 3;
+                gbc.gridx = columna + columnasPistas; // Ajustar offset según columnas de pistas
                 gbc.gridy = i;
                 gbc.weightx = 0.0;
                 gbc.weighty = 0.0;
@@ -101,10 +103,11 @@ public class VistaNonogramaWindowBuilderNuevo extends JFrame implements VistaNon
             }
         }
         
+        // Agregar pistas de filas (izquierda de la grilla)
         for (int fila = 0; fila < tamañoActual; fila++) {
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < columnasPistas; i++) {
                 gbc.gridx = i;
-                gbc.gridy = fila + 3;
+                gbc.gridy = fila + columnasPistas; // Ajustar offset según columnas de pistas
                 gbc.weightx = 0.0;
                 gbc.weighty = 0.0;
                 gbc.insets = new Insets(1, 1, 1, 1);
@@ -112,10 +115,11 @@ public class VistaNonogramaWindowBuilderNuevo extends JFrame implements VistaNon
             }
         }
         
+        // Agregar botones de la grilla
         for (int fila = 0; fila < tamañoActual; fila++) {
             for (int columna = 0; columna < tamañoActual; columna++) {
-                gbc.gridx = columna + 3;
-                gbc.gridy = fila + 3;
+                gbc.gridx = columna + columnasPistas; // Ajustar offset según columnas de pistas
+                gbc.gridy = fila + columnasPistas; // Ajustar offset según columnas de pistas
                 gbc.weightx = 0.0;
                 gbc.weighty = 0.0;
                 gbc.insets = new Insets(1, 1, 1, 1);
@@ -125,11 +129,18 @@ public class VistaNonogramaWindowBuilderNuevo extends JFrame implements VistaNon
         
         JPanel panelCentral = new JPanel(new GridBagLayout());
         GridBagConstraints gbcCentral = new GridBagConstraints();
-        gbcCentral.gridx = 0;
-        gbcCentral.gridy = 0;
-        gbcCentral.weightx = 1.0;
-        gbcCentral.weighty = 1.0;
+        
+        // Calcular el offset para centrar la grilla según el nivel
+        int tamañoMaximo = 20; // Tamaño del nivel Experto
+        int offsetX = (tamañoMaximo - tamañoActual) / 2;
+        int offsetY = (tamañoMaximo - tamañoActual) / 2;
+        
+        gbcCentral.gridx = offsetX;
+        gbcCentral.gridy = offsetY;
+        gbcCentral.weightx = 0.0;
+        gbcCentral.weighty = 0.0;
         gbcCentral.anchor = GridBagConstraints.CENTER;
+        gbcCentral.insets = new Insets(offsetY * 10, offsetX * 10, offsetY * 10, offsetX * 10);
         panelCentral.add(panelGrillaConPistas, gbcCentral);
         
         add(panelSuperior, BorderLayout.NORTH);
@@ -223,15 +234,46 @@ public class VistaNonogramaWindowBuilderNuevo extends JFrame implements VistaNon
             }
         });
         
-        selectorNivel.addActionListener(event -> {
-            if (controlador != null) {
-                NivelDificultad nuevoNivel = (NivelDificultad) selectorNivel.getSelectedItem();
-                controlador.cambiarNivel(nuevoNivel);
-                SwingUtilities.invokeLater(() -> {
-                    actualizarVisualizacion();
-                });
-            }
+        selectorNivel.addActionListener(e -> {
+            NivelDificultad nivelSeleccionado = (NivelDificultad) selectorNivel.getSelectedItem();
+            cambiarNivel(nivelSeleccionado);
         });
+    }
+    
+    private int obtenerTamañoCelda() {
+        // Tamaño fijo para todos los niveles, optimizado para la ventana de 1600x1000
+        return 30; // Tamaño consistente para todos los niveles
+    }
+    
+    private void ajustarTamañoVentana() {
+        // No cambiar el tamaño de la ventana, solo centrarla
+        setLocationRelativeTo(null);
+    }
+    
+    private void cambiarNivel(NivelDificultad nuevoNivel) {
+        // Limpiar la interfaz actual
+        getContentPane().removeAll();
+        
+        // Reinicializar componentes con el nuevo nivel
+        inicializarComponentesDinamicos(nuevoNivel);
+        
+        // Reconfigurar el diseño
+        configurarDiseno();
+        
+        // Reconfigurar los manejadores de eventos
+        configurarManejadoresEventos();
+        
+        // Ajustar la posición de la ventana
+        ajustarTamañoVentana();
+        
+        // Notificar al controlador del cambio de nivel
+        if (controlador != null) {
+            controlador.cambiarNivel(nuevoNivel);
+        }
+        
+        // Actualizar la interfaz
+        revalidate();
+        repaint();
     }
     
     @Override
@@ -266,7 +308,7 @@ public class VistaNonogramaWindowBuilderNuevo extends JFrame implements VistaNon
         List<List<Integer>> pistasFilas = modelo.obtenerPistasFilas();
         for (int fila = 0; fila < tamañoActual; fila++) {
             List<Integer> pistas = pistasFilas.get(fila);
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < etiquetasPistasFilas[fila].length; i++) {
                 String textoPista = (i < pistas.size()) ? String.valueOf(pistas.get(i)) : "";
                 etiquetasPistasFilas[fila][i].setText(textoPista);
             }
@@ -275,7 +317,7 @@ public class VistaNonogramaWindowBuilderNuevo extends JFrame implements VistaNon
         List<List<Integer>> pistasColumnas = modelo.obtenerPistasColumnas();
         for (int columna = 0; columna < tamañoActual; columna++) {
             List<Integer> pistas = pistasColumnas.get(columna);
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < etiquetasPistasColumnas.length; i++) {
                 String textoPista = (i < pistas.size()) ? String.valueOf(pistas.get(i)) : "";
                 etiquetasPistasColumnas[i][columna].setText(textoPista);
             }
@@ -324,13 +366,13 @@ public class VistaNonogramaWindowBuilderNuevo extends JFrame implements VistaNon
         ModeloNonograma modelo = controlador.obtenerModelo();
         switch (modelo.obtenerEstadoJuego()) {
             case JUGANDO:
-                etiquetaEstado.setText("¡Jugando! Clic izquierdo para llenar/vaciar celdas");
+                etiquetaEstado.setText("Programacion III - Universidad Nacional de General Sarmiento Trabajo Practico 1: Nonograma");
                 break;
             case GANADO:
-                etiquetaEstado.setText("¡Felicitaciones! ¡Has ganado!");
+                etiquetaEstado.setText("¡Felicitaciones! ¡Ganaste!");
                 break;
             case PERDIDO:
-                etiquetaEstado.setText("¡Has perdido! Intenta de nuevo");
+                etiquetaEstado.setText("¡Perdiste! Intenta de nuevo");
                 break;
         }
     }
@@ -371,9 +413,10 @@ public class VistaNonogramaWindowBuilderNuevo extends JFrame implements VistaNon
         for (int fila = 0; fila < tamañoActual; fila++) {
             for (int columna = 0; columna < tamañoActual; columna++) {
                 JLabel labelSolucion = new JLabel();
-                labelSolucion.setPreferredSize(new Dimension(TAMAÑO_CELDA, TAMAÑO_CELDA));
-                labelSolucion.setMinimumSize(new Dimension(TAMAÑO_CELDA, TAMAÑO_CELDA));
-                labelSolucion.setMaximumSize(new Dimension(TAMAÑO_CELDA, TAMAÑO_CELDA));
+                int tamañoCelda = obtenerTamañoCelda();
+                labelSolucion.setPreferredSize(new Dimension(tamañoCelda, tamañoCelda));
+                labelSolucion.setMinimumSize(new Dimension(tamañoCelda, tamañoCelda));
+                labelSolucion.setMaximumSize(new Dimension(tamañoCelda, tamañoCelda));
                 labelSolucion.setFont(new Font("Arial", Font.BOLD, 20));
                 labelSolucion.setHorizontalAlignment(SwingConstants.CENTER);
                 labelSolucion.setVerticalAlignment(SwingConstants.CENTER);
@@ -419,32 +462,41 @@ public class VistaNonogramaWindowBuilderNuevo extends JFrame implements VistaNon
     
     private void inicializarComponentesDinamicos(NivelDificultad nivel) {
         int tamaño = nivel.obtenerTamañoGrilla();
+        int tamañoCelda = obtenerTamañoCelda();
+        
+        // Calcular cuántas columnas de pistas se necesitan
+        // Para grillas pequeñas (5x5) usamos 3, para más grandes usamos más
+        int columnasPistas = Math.max(3, Math.min(tamaño / 2, 8)); // Máximo 8 columnas para evitar que se vea mal
         
         botonesCelda = new JButton[tamaño][tamaño];
         for (int fila = 0; fila < tamaño; fila++) {
             for (int columna = 0; columna < tamaño; columna++) {
                 botonesCelda[fila][columna] = new JButton();
-                botonesCelda[fila][columna].setPreferredSize(new Dimension(TAMAÑO_CELDA, TAMAÑO_CELDA));
+                botonesCelda[fila][columna].setPreferredSize(new Dimension(tamañoCelda, tamañoCelda));
                 botonesCelda[fila][columna].setBackground(Color.WHITE);
                 botonesCelda[fila][columna].setBorder(BorderFactory.createLineBorder(Color.BLACK));
             }
         }
         
-        etiquetasPistasFilas = new JLabel[tamaño][3];
+        etiquetasPistasFilas = new JLabel[tamaño][columnasPistas];
         for (int fila = 0; fila < tamaño; fila++) {
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < columnasPistas; i++) {
                 etiquetasPistasFilas[fila][i] = new JLabel("");
-                etiquetasPistasFilas[fila][i].setPreferredSize(new Dimension(ANCHO_PISTA, ALTO_PISTA));
-                etiquetasPistasFilas[fila][i].setHorizontalAlignment(SwingConstants.RIGHT);
+                // El ancho se ajustará automáticamente al contenido
+                etiquetasPistasFilas[fila][i].setPreferredSize(new Dimension(ANCHO_PISTA_MINIMO, ALTO_PISTA));
+                etiquetasPistasFilas[fila][i].setHorizontalAlignment(SwingConstants.CENTER);
+                etiquetasPistasFilas[fila][i].setFont(new Font("Arial", Font.BOLD, 10));
             }
         }
         
-        etiquetasPistasColumnas = new JLabel[3][tamaño];
-        for (int i = 0; i < 3; i++) {
+        etiquetasPistasColumnas = new JLabel[columnasPistas][tamaño];
+        for (int i = 0; i < columnasPistas; i++) {
             for (int columna = 0; columna < tamaño; columna++) {
                 etiquetasPistasColumnas[i][columna] = new JLabel("");
-                etiquetasPistasColumnas[i][columna].setPreferredSize(new Dimension(TAMAÑO_CELDA, ALTO_PISTA));
+                // El ancho se ajustará automáticamente al contenido
+                etiquetasPistasColumnas[i][columna].setPreferredSize(new Dimension(tamañoCelda, ALTO_PISTA));
                 etiquetasPistasColumnas[i][columna].setHorizontalAlignment(SwingConstants.CENTER);
+                etiquetasPistasColumnas[i][columna].setFont(new Font("Arial", Font.BOLD, 10));
             }
         }
     }
