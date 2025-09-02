@@ -109,44 +109,34 @@ public class ModeloNonograma {
         }
     }
     
-    // Inicia un nuevo juego generando un puzzle aleatorio.
-    // Notifica a los observadores sobre el cambio.
+    // Genera un nuevo puzzle automáticamente.
     public void nuevoJuego() {
-        generarPuzzle();
-        estadoJuego = EstadoJuego.JUGANDO;
-        
-        // Reiniciar pistas disponibles según el nivel actual
-        if (nivelActual != null) {
-            pistasDisponibles = nivelActual.obtenerPistasDisponibles();
-        } else {
-            pistasDisponibles = 3; // Valor por defecto
-        }
-        
-        // Limpiar celdas reveladas
-        limpiarCeldasReveladas();
-        
-        notificarObservadores();
-    }
-    
-    /**
-     * Genera un puzzle aleatorio para el Nonograma.
-     * Crea una solución válida y genera las pistas correspondientes.
-     */
-    private void generarPuzzle() {
-        // Generar solución aleatoria
+        // Generar solución del puzzle
         generarSolucionAleatoria();
         
         // Generar pistas basadas en la solución
         generarPistas();
         
-        // Limpiar SOLO la grilla del jugador (NO la solución)
+        // Reiniciar grilla del jugador
         limpiarGrillaJugador();
+        
+        // Reiniciar estado del juego
+        estadoJuego = EstadoJuego.JUGANDO;
+        
+        // Reiniciar pistas disponibles
+        pistasDisponibles = nivelActual != null ? nivelActual.obtenerPistasDisponibles() : 3;
+        
+        // Limpiar celdas reveladas
+        limpiarCeldasReveladas();
+        
+        // Notificar cambios
+        notificarObservadores();
     }
     
-    /**
-     * Genera una solución aleatoria válida para el Nonograma.
-     * Utiliza diferentes algoritmos para crear puzzles variados y solucionables.
-     */
+    // ... existing code ...
+    
+    // Genera una solución aleatoria válida para el Nonograma.
+    // Utiliza diferentes algoritmos para crear puzzles variados y solucionables.
     private void generarSolucionAleatoria() {
         // Limpiar solución
         for (int fila = 0; fila < tamañoGrilla; fila++) {
@@ -156,7 +146,7 @@ public class ModeloNonograma {
         }
         
         // Elegir un algoritmo aleatorio según el tamaño
-        int algoritmo = (int)(Math.random() * 10); // 0-9 algoritmos diferentes
+        int algoritmo = (int)(Math.random() * 5); // 0-4 algoritmos diferentes
         
         switch (algoritmo) {
             case 0:
@@ -173,21 +163,6 @@ public class ModeloNonograma {
                 break;
             case 4:
                 generarPuzzleConBordesYCentro();
-                break;
-            case 5:
-                generarPuzzleConPatronesComplejos();
-                break;
-            case 6:
-                generarPuzzleConLetrasYSímbolos();
-                break;
-            case 7:
-                generarPuzzleConAnimalesYObjetos();
-                break;
-            case 8:
-                generarPuzzleConLaberintos();
-                break;
-            case 9:
-                generarPuzzleConFractales();
                 break;
         }
         
@@ -209,9 +184,7 @@ public class ModeloNonograma {
     
 
     
-    /**
-     * Cuenta el número de celdas llenas en la solución
-     */
+    // Cuenta el número de celdas llenas en la solución
     private int contarCeldasLlenas() {
         int contador = 0;
         for (int fila = 0; fila < tamañoGrilla; fila++) {
@@ -224,9 +197,7 @@ public class ModeloNonograma {
         return contador;
     }
     
-    /**
-     * Algoritmo 1: Genera puzzles con formas geométricas básicas
-     */
+    // Algoritmo 1: Genera puzzles con formas geométricas básicas
     private void generarPuzzleConFormasGeometricas() {
         int centro = tamañoGrilla / 2;
         
@@ -259,9 +230,7 @@ public class ModeloNonograma {
         }
     }
     
-    /**
-     * Algoritmo 2: Genera puzzles con patrones simétricos
-     */
+    // Algoritmo 2: Genera puzzles con patrones simétricos
     private void generarPuzzleConPatronesSimetricos() {
         // Patrón simétrico horizontal y vertical
         for (int fila = 0; fila < tamañoGrilla; fila++) {
@@ -278,9 +247,7 @@ public class ModeloNonograma {
         }
     }
     
-    /**
-     * Algoritmo 3: Genera puzzles con secuencias lógicas
-     */
+    // Algoritmo 3: Genera puzzles con secuencias lógicas
     private void generarPuzzleConSecuenciasLogicas() {
         // Secuencias basadas en patrones matemáticos
         for (int fila = 0; fila < tamañoGrilla; fila++) {
@@ -297,9 +264,7 @@ public class ModeloNonograma {
         }
     }
     
-    /**
-     * Algoritmo 4: Genera puzzles con densidad variable
-     */
+    // Algoritmo 4: Genera puzzles con densidad variable
     private void generarPuzzleConDensidadVariable() {
         // Mayor densidad en el centro, menor en los bordes
         for (int fila = 0; fila < tamañoGrilla; fila++) {
@@ -315,9 +280,7 @@ public class ModeloNonograma {
         }
     }
     
-    /**
-     * Algoritmo 5: Genera puzzles con bordes y centro
-     */
+    // Algoritmo 5: Genera puzzles con bordes y centro
     private void generarPuzzleConBordesYCentro() {
         // Bordes
         for (int i = 0; i < tamañoGrilla; i++) {
@@ -339,9 +302,7 @@ public class ModeloNonograma {
         }
     }
     
-    /**
-     * Verifica si un número es primo
-     */
+    // Verifica si un número es primo
     private boolean esPrimo(int numero) {
         if (numero <= 1) return false;
         if (numero <= 3) return true;
@@ -355,276 +316,10 @@ public class ModeloNonograma {
         return true;
     }
     
-    /**
-     * Algoritmo 6: Genera puzzles con patrones complejos y variados
-     */
-    private void generarPuzzleConPatronesComplejos() {
-        // Combinación de múltiples patrones
-        for (int fila = 0; fila < tamañoGrilla; fila++) {
-            for (int col = 0; col < tamañoGrilla; col++) {
-                boolean llenar = false;
-                
-                // Patrón de ondas
-                if (Math.sin(fila * 0.5) > 0.3 && Math.cos(col * 0.5) > 0.3) {
-                    llenar = true;
-                }
-                
-                // Patrón de espiral
-                int distanciaAlCentro = Math.abs(fila - tamañoGrilla/2) + Math.abs(col - tamañoGrilla/2);
-                if (distanciaAlCentro % 3 == 0 && (fila + col) % 2 == 0) {
-                    llenar = true;
-                }
-                
-                // Patrón de cuadrados anidados
-                if ((fila % 4 == 0 || fila % 4 == 3) && (col % 4 == 0 || col % 4 == 3)) {
-                    llenar = true;
-                }
-                
-                // Patrón de números de Fibonacci
-                if (esFibonacci(fila + col)) {
-                    llenar = true;
-                }
-                
-                if (llenar) {
-                    grillaSolucion[fila][col] = EstadoCelda.LLENA;
-                }
-            }
-        }
-    }
+    // ... existing code ...
     
-    /**
-     * Verifica si un número está en la secuencia de Fibonacci
-     */
-    private boolean esFibonacci(int numero) {
-        if (numero <= 1) return true;
-        
-        int a = 0, b = 1;
-        while (b <= numero) {
-            if (b == numero) return true;
-            int temp = a + b;
-            a = b;
-            b = temp;
-        }
-        return false;
-    }
-    
-    /**
-     * Algoritmo 7: Genera puzzles con letras y símbolos
-     */
-    private void generarPuzzleConLetrasYSímbolos() {
-        // Generar diferentes letras según el tamaño
-        if (tamañoGrilla <= 5) {
-            generarLetraX();
-        } else if (tamañoGrilla <= 10) {
-            generarLetraT();
-        } else if (tamañoGrilla <= 15) {
-            generarLetraH();
-        } else {
-            generarLetraE();
-        }
-    }
-    
-    /**
-     * Genera la letra X
-     */
-    private void generarLetraX() {
-        for (int i = 0; i < tamañoGrilla; i++) {
-            grillaSolucion[i][i] = EstadoCelda.LLENA; // Diagonal principal
-            grillaSolucion[i][tamañoGrilla - 1 - i] = EstadoCelda.LLENA; // Diagonal secundaria
-        }
-    }
-    
-    /**
-     * Genera la letra T
-     */
-    private void generarLetraT() {
-        // Línea horizontal superior
-        for (int col = 0; col < tamañoGrilla; col++) {
-            grillaSolucion[0][col] = EstadoCelda.LLENA;
-        }
-        // Línea vertical central
-        for (int fila = 0; fila < tamañoGrilla; fila++) {
-            grillaSolucion[fila][tamañoGrilla / 2] = EstadoCelda.LLENA;
-        }
-    }
-    
-    /**
-     * Genera la letra H
-     */
-    private void generarLetraH() {
-        // Líneas verticales
-        for (int fila = 0; fila < tamañoGrilla; fila++) {
-            grillaSolucion[fila][0] = EstadoCelda.LLENA;
-            grillaSolucion[fila][tamañoGrilla - 1] = EstadoCelda.LLENA;
-        }
-        // Línea horizontal central
-        for (int col = 0; col < tamañoGrilla; col++) {
-            grillaSolucion[tamañoGrilla / 2][col] = EstadoCelda.LLENA;
-        }
-    }
-    
-    /**
-     * Genera la letra E
-     */
-    private void generarLetraE() {
-        // Línea vertical izquierda
-        for (int fila = 0; fila < tamañoGrilla; fila++) {
-            grillaSolucion[fila][0] = EstadoCelda.LLENA;
-        }
-        // Líneas horizontales
-        for (int col = 0; col < tamañoGrilla; col++) {
-            grillaSolucion[0][col] = EstadoCelda.LLENA; // Superior
-            grillaSolucion[tamañoGrilla / 2][col] = EstadoCelda.LLENA; // Central
-            grillaSolucion[tamañoGrilla - 1][col] = EstadoCelda.LLENA; // Inferior
-        }
-    }
-    
-    /**
-     * Algoritmo 8: Genera puzzles con animales y objetos
-     */
-    private void generarPuzzleConAnimalesYObjetos() {
-        // Generar diferentes objetos según el tamaño
-        if (tamañoGrilla <= 5) {
-            generarCorazon();
-        } else if (tamañoGrilla <= 10) {
-            generarEstrella();
-        } else if (tamañoGrilla <= 15) {
-            generarCasa();
-        } else {
-            generarArbol();
-        }
-    }
-    
-    /**
-     * Genera un corazón
-     */
-    private void generarCorazon() {
-        int centro = tamañoGrilla / 2;
-        // Lados del corazón
-        for (int i = 0; i < 3; i++) {
-            if (centro - i >= 0 && centro + i < tamañoGrilla) {
-                grillaSolucion[centro - i][centro - i] = EstadoCelda.LLENA;
-                grillaSolucion[centro - i][centro + i] = EstadoCelda.LLENA;
-            }
-        }
-        // Base del corazón
-        for (int i = 0; i < 3; i++) {
-            if (centro + i < tamañoGrilla) {
-                grillaSolucion[centro + i][centro] = EstadoCelda.LLENA;
-            }
-        }
-    }
-    
-    /**
-     * Genera una estrella
-     */
-    private void generarEstrella() {
-        int centro = tamañoGrilla / 2;
-        // Puntas de la estrella
-        for (int i = 0; i < tamañoGrilla; i++) {
-            if (i % 2 == 0) {
-                grillaSolucion[0][i] = EstadoCelda.LLENA; // Superior
-                grillaSolucion[tamañoGrilla - 1][i] = EstadoCelda.LLENA; // Inferior
-                grillaSolucion[i][0] = EstadoCelda.LLENA; // Izquierda
-                grillaSolucion[i][tamañoGrilla - 1] = EstadoCelda.LLENA; // Derecha
-            }
-        }
-        // Centro de la estrella
-        grillaSolucion[centro][centro] = EstadoCelda.LLENA;
-    }
-    
-    /**
-     * Genera una casa
-     */
-    private void generarCasa() {
-        // Techo triangular
-        int alturaTecho = tamañoGrilla / 3;
-        for (int fila = 0; fila < alturaTecho; fila++) {
-            for (int col = fila; col < tamañoGrilla - fila; col++) {
-                grillaSolucion[fila][col] = EstadoCelda.LLENA;
-            }
-        }
-        // Cuerpo de la casa
-        for (int fila = alturaTecho; fila < tamañoGrilla; fila++) {
-            grillaSolucion[fila][0] = EstadoCelda.LLENA;
-            grillaSolucion[fila][tamañoGrilla - 1] = EstadoCelda.LLENA;
-        }
-        // Base
-        for (int col = 0; col < tamañoGrilla; col++) {
-            grillaSolucion[tamañoGrilla - 1][col] = EstadoCelda.LLENA;
-        }
-    }
-    
-    /**
-     * Genera un árbol
-     */
-    private void generarArbol() {
-        int centro = tamañoGrilla / 2;
-        // Tronco
-        for (int fila = tamañoGrilla / 2; fila < tamañoGrilla; fila++) {
-            grillaSolucion[fila][centro] = EstadoCelda.LLENA;
-            if (centro + 1 < tamañoGrilla) {
-                grillaSolucion[fila][centro + 1] = EstadoCelda.LLENA;
-            }
-        }
-        // Copa triangular
-        int alturaCopa = tamañoGrilla / 2;
-        for (int fila = 0; fila < alturaCopa; fila++) {
-            int ancho = alturaCopa - fila;
-            for (int col = centro - ancho; col <= centro + ancho; col++) {
-                if (col >= 0 && col < tamañoGrilla) {
-                    grillaSolucion[fila][col] = EstadoCelda.LLENA;
-                }
-            }
-        }
-    }
-    
-    /**
-     * Algoritmo 9: Genera puzzles con laberintos
-     */
-    private void generarPuzzleConLaberintos() {
-        // Generar un laberinto simple
-        for (int fila = 0; fila < tamañoGrilla; fila++) {
-            for (int col = 0; col < tamañoGrilla; col++) {
-                // Bordes del laberinto
-                if (fila == 0 || fila == tamañoGrilla - 1 || col == 0 || col == tamañoGrilla - 1) {
-                    grillaSolucion[fila][col] = EstadoCelda.LLENA;
-                }
-                // Paredes internas en patrón de laberinto
-                else if ((fila % 2 == 0 && col % 3 == 0) || (col % 2 == 0 && fila % 3 == 0)) {
-                    grillaSolucion[fila][col] = EstadoCelda.LLENA;
-                }
-                // Pasillos aleatorios
-                else if (Math.random() < 0.3) {
-                    grillaSolucion[fila][col] = EstadoCelda.LLENA;
-                }
-            }
-        }
-    }
-    
-    /**
-     * Algoritmo 10: Genera puzzles con fractales
-     */
-    private void generarPuzzleConFractales() {
-        // Generar un patrón fractal simple (Sierpinski-like)
-        for (int fila = 0; fila < tamañoGrilla; fila++) {
-            for (int col = 0; col < tamañoGrilla; col++) {
-                // Patrón de Sierpinski modificado
-                if ((fila & col) == 0) {
-                    grillaSolucion[fila][col] = EstadoCelda.LLENA;
-                }
-                // Patrón de Mandelbrot simplificado
-                else if (Math.abs(Math.sin(fila * 0.5) * Math.cos(col * 0.5)) > 0.5) {
-                    grillaSolucion[fila][col] = EstadoCelda.LLENA;
-                }
-            }
-        }
-    }
-    
-    /**
-     * Genera las pistas (hints) basadas en la solución.
-     * Las pistas indican las longitudes de las secuencias de celdas llenas.
-     */
+    // Genera las pistas (hints) basadas en la solución.
+    // Las pistas indican las longitudes de las secuencias de celdas llenas.
     private void generarPistas() {
         // Generar pistas de filas
         pistasFilas = new ArrayList<>();
@@ -641,12 +336,10 @@ public class ModeloNonograma {
         }
     }
     
-    /**
-     * Obtiene las pistas para una fila específica.
-     * 
-     * @param fila Índice de la fila
-     * @return Lista con las longitudes de las secuencias de celdas llenas
-     */
+    // Obtiene las pistas para una fila específica.
+    // 
+    // @param fila Índice de la fila
+    // @return Lista con las longitudes de las secuencias de celdas llenas
     private List<Integer> obtenerPistasFila(int fila) {
         List<Integer> pistas = new ArrayList<>();
         int contadorActual = 0;
@@ -668,12 +361,10 @@ public class ModeloNonograma {
         return pistas.isEmpty() ? java.util.Arrays.asList(0) : pistas;
     }
     
-    /**
-     * Obtiene las pistas para una columna específica.
-     * 
-     * @param columna Índice de la columna
-     * @return Lista con las longitudes de las secuencias de celdas llenas
-     */
+    // Obtiene las pistas para una columna específica.
+    // 
+    // @param columna Índice de la columna
+    // @return Lista con las longitudes de las secuencias de celdas llenas
     private List<Integer> obtenerPistasColumna(int columna) {
         List<Integer> pistas = new ArrayList<>();
         int contadorActual = 0;
@@ -695,73 +386,57 @@ public class ModeloNonograma {
         return pistas.isEmpty() ? java.util.Arrays.asList(0) : pistas;
     }
     
-    /**
-     * Establece el estado de una celda en la grilla del jugador.
-     * 
-     * @param fila Fila de la celda
-     * @param columna Columna de la celda
-     * @param estado Nuevo estado de la celda
-     */
-    public void establecerEstadoCelda(int fila, int columna, EstadoCelda estado) {
-        if (fila >= 0 && fila < tamañoGrilla && columna >= 0 && columna < tamañoGrilla &&
-            estadoJuego == EstadoJuego.JUGANDO) {
-            
-            grillaJuego[fila][columna] = estado;
-            // NO verificar automáticamente - solo cuando se presione el botón
-            notificarObservadores();
-        }
-    }
     
-
-    
-    /**
-     * Verifica si la solución actual es correcta.
-     * Solo es correcta si TODAS las celdas están correctamente marcadas.
-     * 
-     * @return true si la solución es correcta
-     */
-    private boolean esSolucionCorrecta() {
+    // Verifica si la solución actual del jugador es correcta.
+    public boolean verificarSolucion() {
         for (int fila = 0; fila < tamañoGrilla; fila++) {
             for (int columna = 0; columna < tamañoGrilla; columna++) {
-                EstadoCelda estadoJugador = grillaJuego[fila][columna];
-                EstadoCelda estadoSolucion = grillaSolucion[fila][columna];
-                
-                // Si la celda debe estar llena en la solución
-                if (estadoSolucion == EstadoCelda.LLENA) {
-                    // El jugador debe haberla marcado como llena
-                    if (estadoJugador != EstadoCelda.LLENA) {
-                        return false;
-                    }
-                } else {
-                    // Si la celda debe estar vacía en la solución
-                    // El jugador puede tenerla vacía o marcada con X
-                    if (estadoJugador == EstadoCelda.LLENA) {
-                        return false;
-                    }
+                if (grillaJuego[fila][columna] != grillaSolucion[fila][columna]) {
+                    return false;
                 }
             }
         }
+        
+        // Si llegamos aquí, la solución es correcta
+        estadoJuego = EstadoJuego.GANADO;
+        notificarObservadores();
         return true;
     }
     
-    /**
-     * Verifica si la solución actual es correcta (método público).
-     * 
-     * @return true si la solución es correcta
-     */
-    public boolean verificarSolucion() {
-        return esSolucionCorrecta();
+    // Solicita una pista al modelo.
+    // 
+    // @return true si se pudo revelar una pista, false si no hay pistas disponibles
+    public boolean solicitarPista() {
+        if (pistasDisponibles <= 0) {
+            return false; // No hay pistas disponibles
+        }
+        
+        // Buscar una celda no revelada para mostrar como pista
+        for (int fila = 0; fila < tamañoGrilla; fila++) {
+            for (int columna = 0; columna < tamañoGrilla; columna++) {
+                if (!celdasReveladas[fila][columna] && 
+                    grillaJuego[fila][columna] != grillaSolucion[fila][columna]) {
+                    
+                    // Revelar esta celda como pista
+                    grillaJuego[fila][columna] = grillaSolucion[fila][columna];
+                    celdasReveladas[fila][columna] = true;
+                    pistasDisponibles--;
+                    
+                    // Notificar cambios
+                    notificarObservadores();
+                    return true;
+                }
+            }
+        }
+        
+        return false; // No se pudo revelar ninguna pista
     }
     
-
-    
-    /**
-     * Obtiene el estado actual de una celda.
-     * 
-     * @param fila Fila de la celda
-     * @param columna Columna de la celda
-     * @return Estado actual de la celda
-     */
+    // Obtiene el estado actual de una celda.
+    // 
+    // @param fila Fila de la celda
+    // @param columna Columna de la celda
+    // @return Estado actual de la celda
     public EstadoCelda obtenerEstadoCelda(int fila, int columna) {
         if (fila >= 0 && fila < tamañoGrilla && columna >= 0 && columna < tamañoGrilla) {
             return grillaJuego[fila][columna];
@@ -769,13 +444,19 @@ public class ModeloNonograma {
         return EstadoCelda.VACIA;
     }
     
-    /**
-     * Obtiene el estado de una celda en la solución.
-     * 
-     * @param fila Fila de la celda
-     * @param columna Columna de la celda
-     * @return Estado de la celda en la solución
-     */
+    // Establece el estado de una celda en la grilla del jugador.
+    public void establecerEstadoCelda(int fila, int columna, EstadoCelda estado) {
+        if (fila >= 0 && fila < tamañoGrilla && columna >= 0 && columna < tamañoGrilla) {
+            grillaJuego[fila][columna] = estado;
+            notificarObservadores();
+        }
+    }
+    
+    // Obtiene el estado de una celda en la solución.
+    // 
+    // @param fila Fila de la celda
+    // @param columna Columna de la celda
+    // @return Estado de la celda en la solución
     public EstadoCelda obtenerEstadoCeldaSolucion(int fila, int columna) {
         if (fila >= 0 && fila < tamañoGrilla && columna >= 0 && columna < tamañoGrilla) {
             return grillaSolucion[fila][columna];
@@ -787,46 +468,36 @@ public class ModeloNonograma {
     
 
     
-    /**
-     * Obtiene las pistas de todas las filas.
-     * 
-     * @return Lista de pistas por fila
-     */
+    // Obtiene las pistas de todas las filas.
+    // 
+    // @return Lista de pistas por fila
     public List<List<Integer>> obtenerPistasFilas() {
         return pistasFilas;
     }
     
-    /**
-     * Obtiene las pistas de todas las columnas.
-     * 
-     * @return Lista de pistas por columna
-     */
+    // Obtiene las pistas de todas las columnas.
+    // 
+    // @return Lista de pistas por columna
     public List<List<Integer>> obtenerPistasColumnas() {
         return pistasColumnas;
     }
     
-    /**
-     * Obtiene el estado actual del juego.
-     * 
-     * @return Estado actual del juego
-     */
+    // Obtiene el estado actual del juego.
+    // 
+    // @return Estado actual del juego
     public EstadoJuego obtenerEstadoJuego() {
         return estadoJuego;
     }
     
-    /**
-     * Obtiene el tamaño de la grilla.
-     * 
-     * @return Tamaño de la grilla
-     */
+    // Obtiene el tamaño de la grilla.
+    // 
+    // @return Tamaño de la grilla
     public int obtenerTamañoGrilla() {
         return tamañoGrilla;
     }
     
-    /**
-     * Reinicia el juego actual sin generar un nuevo puzzle.
-     * Notifica a los observadores sobre el cambio.
-     */
+    // Reinicia el juego actual sin generar un nuevo puzzle.
+    // Notifica a los observadores sobre el cambio.
     public void reiniciarJuego() {
         limpiarGrillaJugador();
         estadoJuego = EstadoJuego.JUGANDO;
@@ -835,56 +506,7 @@ public class ModeloNonograma {
         notificarObservadores();
     }
     
-    /**
-     * Solicita una pista revelando una celda correcta.
-     * Solo funciona si hay pistas disponibles.
-     * 
-     * @return true si se pudo revelar una pista, false si no hay pistas disponibles
-     */
-    public boolean solicitarPista() {
-        if (pistasDisponibles <= 0) {
-            return false; // No hay pistas disponibles
-        }
-        
-        // Crear una lista de todas las celdas que pueden ser reveladas
-        java.util.List<int[]> celdasDisponibles = new ArrayList<>();
-        
-        for (int fila = 0; fila < tamañoGrilla; fila++) {
-            for (int columna = 0; columna < tamañoGrilla; columna++) {
-                if (grillaSolucion[fila][columna] == EstadoCelda.LLENA && 
-                    !celdasReveladas[fila][columna] &&
-                    grillaJuego[fila][columna] != EstadoCelda.LLENA) {
-                    
-                    celdasDisponibles.add(new int[]{fila, columna});
-                }
-            }
-        }
-        
-        // Si no hay celdas disponibles, no se puede revelar nada
-        if (celdasDisponibles.isEmpty()) {
-            return false;
-        }
-        
-        // Seleccionar una celda aleatoria de las disponibles
-        int indiceAleatorio = (int)(Math.random() * celdasDisponibles.size());
-        int[] celdaSeleccionada = celdasDisponibles.get(indiceAleatorio);
-        int fila = celdaSeleccionada[0];
-        int columna = celdaSeleccionada[1];
-        
-        // Revelar la celda seleccionada
-        grillaJuego[fila][columna] = EstadoCelda.LLENA;
-        celdasReveladas[fila][columna] = true;
-        pistasDisponibles--;
-        
-
-        
-        notificarObservadores();
-        return true;
-    }
-    
-    /**
-     * Limpia las celdas reveladas.
-     */
+    // Limpia las celdas reveladas.
     private void limpiarCeldasReveladas() {
         for (int fila = 0; fila < tamañoGrilla; fila++) {
             for (int columna = 0; columna < tamañoGrilla; columna++) {
@@ -893,24 +515,20 @@ public class ModeloNonograma {
         }
     }
     
-    /**
-     * Obtiene el número de pistas disponibles.
-     * 
-     * @return Número de pistas disponibles
-     */
+    // Obtiene el número de pistas disponibles.
+    // 
+    // @return Número de pistas disponibles
     public int obtenerPistasDisponibles() {
         return pistasDisponibles;
     }
     
 
     
-    /**
-     * Verifica si una celda ha sido revelada como pista.
-     * 
-     * @param fila Fila de la celda
-     * @param columna Columna de la celda
-     * @return true si la celda fue revelada como pista
-     */
+    // Verifica si una celda ha sido revelada como pista.
+    // 
+    // @param fila Fila de la celda
+    // @param columna Columna de la celda
+    // @return true si la celda fue revelada como pista
     public boolean esCeldaRevelada(int fila, int columna) {
         if (fila >= 0 && fila < tamañoGrilla && columna >= 0 && columna < tamañoGrilla) {
             return celdasReveladas[fila][columna];
@@ -918,11 +536,9 @@ public class ModeloNonograma {
         return false;
     }
     
-    /**
-     * Cambia el nivel de dificultad del juego.
-     * 
-     * @param nuevoNivel Nuevo nivel de dificultad
-     */
+    // Cambia el nivel de dificultad del juego.
+    // 
+    // @param nuevoNivel Nuevo nivel de dificultad
     public void cambiarNivel(NivelDificultad nuevoNivel) {
         this.nivelActual = nuevoNivel;
         this.tamañoGrilla = nuevoNivel.obtenerTamañoGrilla();
@@ -970,20 +586,16 @@ public class ModeloNonograma {
         notificarObservadores();
     }
     
-    /**
-     * Obtiene el nivel de dificultad actual.
-     * 
-     * @return Nivel de dificultad actual
-     */
+    // Obtiene el nivel de dificultad actual.
+    // 
+    // @return Nivel de dificultad actual
     public NivelDificultad obtenerNivelActual() {
         return nivelActual;
     }
     
-    /**
-     * Obtiene todos los niveles de dificultad disponibles.
-     * 
-     * @return Array con todos los niveles
-     */
+    // Obtiene todos los niveles de dificultad disponibles.
+    // 
+    // @return Array con todos los niveles
     public static NivelDificultad[] obtenerNivelesDisponibles() {
         return NivelDificultad.values();
     }

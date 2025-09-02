@@ -1,286 +1,195 @@
-# Nonograma - Trabajo Práctico 1
+# 🧩 Proyecto Nonograma - Juego de Lógica
 
-**Programación III - Universidad Nacional de General Sarmiento**
+## ¿Qué es esto?
 
-**Alumnos:** Ulises Fonseca y Kevin Cordua
+Mirá, es un **juego de Nonograma** hecho en Java. Es uno de esos juegos de lógica donde tenés que completar una grilla siguiendo las pistas de los números que aparecen en las filas y columnas.
 
-**Fecha de entrega:** Martes 16 de septiembre
+## ¿Cómo se juega?
 
-## Descripción del Proyecto
+- **El objetivo**: Llenar la grilla correctamente siguiendo las pistas
+- **Las pistas**: Son números que te dicen cuántas celdas consecutivas están llenas
+- **Ejemplo práctico**: Si una fila dice "2 1", significa que hay un grupo de 2 celdas llenas juntas, seguido de un grupo de 1 celda llena
+- **Dificultades**: Hay 4 niveles - Fácil (5x5), Medio (10x10), Difícil (15x15) y Experto (20x20)
 
-Este trabajo práctico implementa una aplicación visual que permite jugar al juego de ingenio llamado **Nonograma**. El nonograma es un tipo de rompecabezas originario de Japón, que se juega sobre una cuadrícula en blanco y negro. Es un juego de ingenio con reglas simples y soluciones desafiantes.
+## ¿Cómo está organizado el código?
 
-### Reglas del Juego
+El proyecto usa el patrón **MVC** (Modelo-Vista-Controlador). 
 
-- Se tiene una grilla de casillas de 5×5, que deben ser pintadas de negro o marcadas con una X
-- En las pistas, cada número indica una cadena de celdas negras consecutivas
-- Entre dos cadenas de celdas negras debe existir al menos una celda libre (marcada con X)
-- Al costado de cada fila aparecen los largos de las cadenas de casillas en negro para esa fila
-- Sobre cada columna aparecen los largos de las cadenas de casillas en negro para esa columna
-- El objetivo es encontrar y marcar todas las casillas negras
-
-**Observación:** Dos cadenas de casillas negras están separadas, al menos, por una X.
-
-## Funcionalidades Implementadas
-
-### Funcionalidades Básicas (Obligatorias)
-- ✅ Interfaz visual intuitiva para grillas de 5×5
-- ✅ Pintar celdas de negro (clic)
-- ✅ Dejar celdas en blanco
-- ✅ Evaluación de solución (botón "Ver Solución")
-- ✅ Información de victoria/derrota
-- ✅ Mostrar solución correcta
-
-### Funcionalidades Opcionales (Implementadas)
-- ✅ **Niveles de juego:** Grillas de 5×5, 10×10, 15×15, 20×20
-- ✅ **Sistema de pistas limitado:** Botón "Dar Pista" con límite de 3 pistas por nivel
-- ✅ **Mostrar solución:** Botón "Insertar Solución" que completa automáticamente la grilla
-
-## Arquitectura del Proyecto
-
-### Patrón MVC (Model-View-Controller)
-
-La aplicación está implementada siguiendo el patrón de diseño **MVC** (Modelo-Vista-Controlador), que separa claramente las responsabilidades de cada componente:
-
-#### 1. Modelo (Model)
-**Responsabilidades:**
-- Contiene toda la lógica del juego
-- Maneja el estado de la grilla (jugador y solución)
-- Genera puzzles aleatorios
-- Valida soluciones
-- Gestiona el sistema de pistas
-
-**Clases principales:**
-- `ModeloNonograma.java`: Lógica central del juego
-- `NivelDificultad.java`: Enum con diferentes niveles
-- `EstadoCelda.java`: Estados posibles de una celda (VACIA, LLENA, MARCADA)
-- `EstadoJuego.java`: Estados del juego (JUGANDO, GANADO, PERDIDO)
-
-**Características del Modelo:**
-```java
-// Generación de puzzles con 10 algoritmos diferentes
-private void generarSolucionAleatoria() {
-    // Algoritmos: formas geométricas, patrones simétricos, 
-    // secuencias lógicas, densidad variable, etc.
-}
-
-// Sistema de pistas inteligente
-public boolean solicitarPista() {
-    // Revela celdas aleatorias de la solución
-    // Previene modificación de celdas reveladas
-}
-```
-
-#### 2. Vista (View)
-**Responsabilidades:**
-- Interfaz gráfica de usuario
-- Muestra el estado del juego
-- Captura eventos del usuario
-- Actualiza la visualización
-
-**Clases principales:**
-- `VistaNonograma.java`: Interfaz que define el contrato
-- `VistaNonogramaWindowBuilderNuevo.java`: Implementación con Swing
-
-**Características de la Vista:**
-```java
-// Interfaz responsive con JLayeredPane
-private void configurarDiseno() {
-    // Grilla centrada independientemente de las pistas
-    // Pistas posicionadas sin afectar el centrado
-}
-
-// Manejo de eventos del mouse
-cellButtons\[fila\]\[columna\].addMouseListener(new MouseAdapter() {
-    // Clic: pintar celda
-});
-```
-
-#### 3. Controlador (Controller)
-**Responsabilidades:**
-- Coordina la comunicación entre Modelo y Vista
-- Maneja eventos del usuario
-- Actualiza el modelo según las acciones del usuario
-- Notifica a la vista sobre cambios
-
-**Clases principales:**
-- `ControladorNonograma.java`: Controlador principal
-
-**Características del Controlador:**
-```java
-// Manejo de clics en celdas
-public void manejarClicCelda(int fila, int columna) {
-    // Determina el nuevo estado de la celda
-    // Actualiza el modelo
-    // Notifica a la vista
-}
-
-// Verificación de solución
-public void verificarSolucion() {
-    // Compara grilla del jugador con solución
-    // Muestra resultado (victoria/derrota)
-}
-```
-
-### Patrón Observer
-
-La aplicación implementa el **patrón Observer** para mantener sincronizados el Modelo y la Vista:
-
-#### Implementación del Observer
-
-**En el Modelo:**
-```java
-public interface ObservadorModelo {
-    void alCambiarModelo();
-}
-
-private List<ObservadorModelo> observadores;
-
-public void agregarObservador(ObservadorModelo observador) {
-    if (!observadores.contains(observador)) {
-        observadores.add(observador);
-    }
-}
-
-private void notificarObservadores() {
-    for (ObservadorModelo observador : observadores) {
-        observador.alCambiarModelo();
-    }
-}
-```
-
-**En la Vista:**
-```java
-public class VistaNonogramaWindowBuilderNuevo extends JFrame 
-    implements VistaNonograma, ModeloNonograma.ObservadorModelo {
-    
-    @Override
-    public void alCambiarModelo() {
-        // Actualiza la visualización cuando cambia el modelo
-        actualizarVisualizacion();
-    }
-}
-```
-
-#### Flujo de Comunicación
-
-1. **Usuario interactúa** → Vista captura evento
-2. **Vista notifica** → Controlador recibe evento
-3. **Controlador actualiza** → Modelo cambia estado
-4. **Modelo notifica** → Observadores (Vista) son notificados
-5. **Vista se actualiza** → Interfaz refleja cambios
-
-## Estructura del Código
+### Las carpetas que tenés:
 
 ```
 src/main/java/com/nonogram/
-├── AplicacionNonograma.java          # Clase principal
-├── controlador/
-│   └── ControladorNonograma.java     # Controlador MVC
-├── model/
-│   ├── ModeloNonograma.java          # Modelo principal
-│   ├── NivelDificultad.java          # Enum niveles
-│   ├── EstadoCelda.java              # Enum estados celda
-│   └── EstadoJuego.java              # Enum estados juego
-└── vista/
-    ├── VistaNonograma.java           # Interfaz vista
-    └── VistaNonogramaWindowBuilderNuevo.java  # Implementación Swing
+├── model/          ← Acá está toda la lógica del juego
+├── vista/          ← La interfaz gráfica que ves
+├── controlador/    ← Maneja lo que pasa cuando hacés clic
+└── AplicacionNonograma.java  ← Por acá empieza todo
 ```
 
-## Características Técnicas
+## ¿Qué hace cada archivo?
 
-### Generación de Puzzles
-- **10 algoritmos diferentes** para generar puzzles variados
-- **Validación de densidad** para asegurar puzzles solucionables
-- **Patrones temáticos:** formas geométricas, letras, animales, fractales
+### 1. **Modelo** (carpeta `model/`)
+- **`ModeloNonograma.java`**: Este es el "cerebro" del juego
+  - Se encarga de generar los puzzles automáticamente
+  - Verifica si lo que hiciste está bien o mal
+  - Controla si estás jugando, si ganaste o perdiste
+  - Guarda la grilla del juego y la solución correcta
 
-### Sistema de Pistas
-- **Pistas limitadas** por nivel (3 para fácil, 2 para medio, 1 para difícil)
-- **Revelación aleatoria** de celdas correctas
-- **Protección** de celdas reveladas (no se pueden modificar)
+- **`NivelDificultad.java`**: Define los 4 niveles de dificultad
+  - Fácil: grilla 5x5
+  - Medio: grilla 10x10  
+  - Difícil: grilla 15x15
+  - Experto: grilla 20x20
 
-### Interfaz de Usuario
-- **Ventana centrada** de 1920×1080 píxeles
-- **Grilla perfectamente centrada** independiente de las pistas
-- **Pistas compactas** con espaciado optimizado
-- **Botones intuitivos** para todas las acciones
+- **`EstadoCelda.java`**: Solo dice si una celda está vacía o llena
+- **`EstadoJuego.java`**: Dice si estás jugando, ganaste o perdiste
 
-### Niveles de Dificultad
-- **Fácil:** 5×5, 3 pistas disponibles
-- **Medio:** 10×10, 2 pistas disponibles  
-- **Difícil:** 15×15, 1 pista disponible
-- **Experto:** 20×20, 0 pistas disponibles
+### 2. **Vista** (carpeta `vista/`)
+- **`VistaNonograma.java`**: Es como un "contrato" que dice qué métodos debe tener la vista
+- **`VistaNonogramaWindowBuilderNuevo.java`**: La interfaz gráfica real (hecha con WindowBuilder de Eclipse)
+  - Te muestra la grilla del juego
+  - Te muestra las pistas de las filas y columnas
+  - Tiene botones para nuevo juego, verificar, pedir pistas, etc.
 
-## Compilación y Ejecución
+### 3. **Controlador** (carpeta `controlador/`)
+- **`ControladorNonograma.java`**: Es como un "mensajero" entre la vista y el modelo
+  - Recibe cuando hacés clic en alguna parte
+  - Decide qué hacer cuando hacés clic en una celda
+  - Conecta la vista con la lógica del juego
 
-### Requisitos
-- Java Development Kit (JDK) 24 o superior
-- Eclipse IDE (recomendado)
+### 4. **Clase Principal**
+- **`AplicacionNonograma.java`**: Por acá empieza todo
+  - Crea el modelo, la vista y el controlador
+  - Los conecta para que puedan hablar entre sí
+  - Inicia el juego
 
-### Compilación desde Terminal
-```bash
-# Limpiar y compilar
-.\run.bat
+## ¿Cómo funciona todo junto?
 
-# O manualmente:
-rmdir /s /q bin
-mkdir bin
-javac -d bin -cp "src/main/java" src/main/java/com/nonogram/model/*.java
-javac -d bin -cp "bin" src/main/java/com/nonogram/vista/*.java
-javac -d bin -cp "bin" src/main/java/com/nonogram/controlador/*.java
-javac -d bin -cp "bin" src/main/java/com/nonogram/*.java
-```
+paso a paso:
 
-### Ejecución
-```bash
-# Desde terminal
-java -cp bin com.nonogram.AplicacionNonograma
+1. **Empieza**: Se ejecuta `AplicacionNonograma.main()`
+2. **Se crea todo**: Se crean el modelo, la vista y el controlador
+3. **Se conectan**: Se conectan entre sí para que puedan comunicarse
+4. **Empieza el juego**: El modelo genera un puzzle, la vista lo muestra
+5. **Cuando hacés clic**:
+   - La vista detecta que hiciste clic
+   - El controlador recibe esa información
+   - El controlador le dice al modelo que cambie la celda
+   - El modelo actualiza el estado
+   - La vista se actualiza para mostrar el cambio
 
-# Desde Eclipse
-# Ejecutar la clase AplicacionNonograma
-```
+## ¿Qué tiene de especial este juego?
 
-## Decisiones de Diseño
+- **Puzzles diferentes**: Cada vez que iniciás un nuevo juego, se genera uno diferente
+- **Pistas**: Tenés 3 pistas disponibles por nivel para ayudarte
+- **Verificar**: Podés verificar si lo que hiciste está bien en cualquier momento
+- **Reiniciar**: Podés reiniciar el juego sin perder el puzzle
+- **Ver solución**: Si te quedás atascado, podés ver la solución
 
-### Separación de Responsabilidades
-- **Modelo:** Contiene solo lógica de negocio, sin dependencias de Swing
-- **Vista:** Solo maneja la interfaz, no contiene lógica de juego
-- **Controlador:** Coordina sin conocer detalles de implementación
+## ¿Cómo lo ejecuto?
 
-### Patrón Observer
-- **Desacoplamiento:** Modelo no conoce directamente a la Vista
-- **Extensibilidad:** Fácil agregar nuevas vistas sin modificar el modelo
-- **Mantenibilidad:** Cambios en un componente no afectan otros
+1. **Para ejecutar**: Buscá la clase `AplicacionNonograma` y ejecutá el método `main`
 
-### Generación de Puzzles
-- **Variedad:** 10 algoritmos diferentes para puzzles únicos
-- **Calidad:** Validación de densidad para puzzles solucionables
-- **Escalabilidad:** Algoritmos adaptan patrones según el tamaño
+## ¿Qué conceptos de programación voy a aprender?
 
-### Interfaz de Usuario
-- **Centrado perfecto:** Grilla siempre centrada independientemente de pistas
-- **Responsive:** Se adapta a diferentes tamaños de grilla
-- **Intuitiva:** Controles claros y feedback inmediato
+- **Patrón MVC**: Cómo separar las responsabilidades del código
+- **Patrón Observer**: Cómo hacer que las partes se notifiquen entre sí
+- **Interfaces**: Cómo definir "contratos" para las clases
+- **Enums**: Cómo crear tipos de datos con valores fijos
 
-## Ventajas de la Implementación
+## ¿Cómo funciona el Observer en este proyecto?
 
-### Para el Desarrollo
-- **Modularidad:** Componentes independientes y reutilizables
-- **Escalabilidad:** Fácil agregar nuevas funcionalidades
-- **Mantenibilidad:** Código organizado y bien documentado
+El patrón Observer es como un sistema de notificaciones automáticas:
 
-### Para el Usuario
-- **Interfaz intuitiva:** Controles claros y responsivos
-- **Feedback inmediato:** Actualización automática de la vista
-- **Funcionalidad completa:** Todas las características requeridas
+**Sin Observer** (lío total):
+- La vista tendría que preguntar constantemente al modelo "¿cambió algo?"
+- El controlador tendría que recordar actualizar la vista cada vez que pasa algo
+- Todo estaría muy acoplado y sería difícil de mantener
 
-### Para el Profesor
-- **Comprensión de patrones:** Implementación correcta de MVC y Observer
-- **Código profesional:** Estructura empresarial estándar
-- **Documentación completa:** Explicaciones detalladas
+**Con Observer** (todo automático):
+- El modelo "avisa" a todos los que estén escuchando cuando algo cambia
+- La vista se registra como "oyente" del modelo
+- Cuando hacés un cambio (por ejemplo, llenás una celda):
+  1. El modelo actualiza el estado
+  2. El modelo automáticamente avisa a todos los oyentes
+  3. La vista recibe la notificación y se actualiza sola
 
-## Conclusión
+**En el código**:
+- El modelo tiene una lista de `observadores`
+- La vista se agrega como observador con `modelo.agregarObservador(this)`
+- Cuando algo cambia, el modelo llama a `notificarObservadores()`
+- Todos los observadores reciben el aviso y se actualizan
 
-Esta implementación demuestra una comprensión sólida de los patrones de diseño MVC y Observer, proporcionando una base sólida para el desarrollo de aplicaciones Java con interfaces gráficas. La arquitectura es escalable, mantenible y sigue las mejores prácticas de la industria.
+## ¿Cómo funciona el controlador?
 
-El proyecto cumple con todos los requisitos obligatorios y opcionales de la consigna, implementando una aplicación completa y funcional del juego Nonograma con una interfaz moderna y una arquitectura robusta.
+El controlador es como el "cerebro" que conecta todo. Te explico qué hace:
+
+### **¿Qué hace el controlador?**
+
+- **Recibe los clics**: Cuando hacés clic en una celda, la vista le avisa al controlador
+- **Decide qué hacer**: El controlador analiza la acción y decide cómo responder
+- **Conecta vista y modelo**: Es el puente entre lo que ves y la lógica del juego
+- **Maneja el estado**: Controla si podés hacer cambios o no
+
+### **Ejemplo práctico del flujo:**
+
+1. **Hacés clic** en una celda de la grilla
+2. **La vista detecta** el clic y le avisa al controlador
+3. **El controlador verifica** si podés cambiar esa celda:
+   - ¿El juego terminó? → No permitir cambios
+   - ¿Es una celda revelada como pista? → No permitir cambios
+4. **Si está permitido**, le dice al modelo que cambie la celda
+5. **El modelo actualiza** el estado y avisa a todos los observadores
+6. **La vista se actualiza** automáticamente para mostrar el cambio
+
+## ¿Cómo se generan los mapas?
+
+Cada vez que iniciás un nuevo juego, el sistema elige **aleatoriamente** qué tipo de patrón generar. No es completamente aleatorio, sino que elige entre 5 algoritmos diferentes.
+
+### **El proceso de generación:**
+
+1. **Se elige un número aleatorio** del 0 al 4
+2. **Cada número corresponde** a un algoritmo específico
+3. **El algoritmo elegido** genera un patrón predecible
+4. **Se verifica que sea solucionable** (no demasiado fácil ni difícil)
+
+### **Los 5 tipos de mapas:**
+
+- **0 - Formas Geométricas**: Cuadrados, cruces, diamantes
+- **1 - Patrones Simétricos**: Simetría horizontal, vertical y diagonal
+- **2 - Secuencias Lógicas**: Patrones de Fibonacci y números primos
+- **3 - Densidad Variable**: Más celdas llenas en el centro
+- **4 - Bordes y Centro**: Bordes completos con centro lleno
+
+## ¿Cómo cambian los mapas según el nivel?
+
+Cada algoritmo se adapta al tamaño de la grilla, creando patrones más simples o complejos:
+
+### **Nivel Fácil (5x5):**
+- **Formas Geométricas**: Cuadrado simple en el centro
+- **Letras**: Solo letra X (diagonales)
+- **Objetos**: Corazón pequeño y simple
+
+### **Nivel Medio (10x10):**
+- **Formas Geométricas**: Cruz completa
+- **Letras**: Letra T (línea horizontal + vertical)
+- **Objetos**: Estrella con puntas
+
+### **Nivel Difícil (15x15):**
+- **Formas Geométricas**: Diamante más complejo
+- **Letras**: Letra H (dos líneas verticales + horizontal)
+- **Objetos**: Casa con techo triangular
+
+### **Nivel Experto (20x20):**
+- **Formas Geométricas**: Diamante muy complejo
+- **Letras**: Letra E (línea vertical + tres horizontales)
+- **Objetos**: Árbol con tronco y copa triangular
+
+### **Ejemplo concreto:**
+
+Si el algoritmo "Formas Geométricas" (número 0) es elegido:
+- **En 5x5**: Crea un cuadrado de 3x3 en el centro
+- **En 10x10**: Crea una cruz que va de borde a borde
+- **En 15x15**: Crea un diamante que ocupa 1/4 de la grilla
+- **En 20x20**: Crea un diamante muy grande y detallado
+
+Esto significa que **cada nivel tiene acceso a los mismos 5 tipos de mapas**, pero la complejidad y el detalle varía según el tamaño de la grilla.
