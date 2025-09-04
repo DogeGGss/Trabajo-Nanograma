@@ -133,9 +133,7 @@ public class ModeloNonograma {
         notificarObservadores();
     }
     
-    // ... existing code ...
     
-    // Genera una solución aleatoria válida para el Nonograma.
     // Utiliza diferentes algoritmos para crear puzzles variados y solucionables.
     private void generarSolucionAleatoria() {
         // Limpiar solución
@@ -166,36 +164,10 @@ public class ModeloNonograma {
                 break;
         }
         
-        // Asegurar que el puzzle tenga al menos algunas celdas llenas
-        if (contarCeldasLlenas() < tamañoGrilla) {
-            generarPuzzleConFormasGeometricas(); // Fallback
-        }
-        
-        // Asegurar que el puzzle sea solucionable (no demasiado denso ni demasiado vacío)
-        int celdasLlenas = contarCeldasLlenas();
-        int totalCeldas = tamañoGrilla * tamañoGrilla;
-        double densidad = (double) celdasLlenas / totalCeldas;
-        
-        // Si la densidad es muy baja o muy alta, regenerar
-        if (densidad < 0.1 || densidad > 0.8) {
-            generarSolucionAleatoria(); // Recursión limitada
-        }
     }
     
 
     
-    // Cuenta el número de celdas llenas en la solución
-    private int contarCeldasLlenas() {
-        int contador = 0;
-        for (int fila = 0; fila < tamañoGrilla; fila++) {
-            for (int col = 0; col < tamañoGrilla; col++) {
-                if (grillaSolucion[fila][col] == EstadoCelda.LLENA) {
-                    contador++;
-                }
-            }
-        }
-        return contador;
-    }
     
     // Algoritmo 1: Genera puzzles con formas geométricas básicas
     private void generarPuzzleConFormasGeometricas() {

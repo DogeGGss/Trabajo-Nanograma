@@ -7,6 +7,7 @@ import com.nonogram.model.NivelDificultad;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -60,7 +61,7 @@ public class VistaNonogramaWindowBuilderNuevo extends JFrame implements VistaNon
         botonInsertarSolucion = new JButton("Insertar Solución");
         botonDarPista = new JButton("Dar Pista (3)");
         
-        etiquetaEstado = new JLabel("Nonograma - Creado por Ulises Fonseca y Kevin Cordua - Programación III UNGS");
+        etiquetaEstado = new JLabel();
         etiquetaEstado.setHorizontalAlignment(SwingConstants.CENTER);
         etiquetaEstado.setFont(new Font("Arial", Font.BOLD, 16));
         
@@ -150,7 +151,7 @@ public class VistaNonogramaWindowBuilderNuevo extends JFrame implements VistaNon
         setLocationRelativeTo(null);
     }
     
-    @SuppressWarnings("unused")    private void configurarManejadoresEventos() {
+   private void configurarManejadoresEventos() {
         int tamañoActual = botonesCelda != null ? botonesCelda.length : 5;
         
         for (int fila = 0; fila < tamañoActual; fila++) {
@@ -196,47 +197,59 @@ public class VistaNonogramaWindowBuilderNuevo extends JFrame implements VistaNon
             }
         }
         
-        botonNuevoJuego.addActionListener(event -> {
-            if (controlador != null) {
-                controlador.nuevoJuego();
-            }
-        });
-        
-        botonReiniciar.addActionListener(event -> {
-            if (controlador != null) {
-                controlador.reiniciarJuego();
-            }
-        });
-        
-        botonSolucion.addActionListener(event -> {
-            if (controlador != null) {
-                controlador.mostrarSolucion();
-            }
-        });
-        
-        botonInsertarSolucion.addActionListener(event -> {
-            if (controlador != null) {
-                controlador.verificarSolucion();
-            }
-        });
-        
-        botonDarPista.addActionListener(event -> {
-            if (controlador != null) {
-                boolean pistaRevelada = controlador.solicitarPista();
-                if (pistaRevelada) {
-                    actualizarContadorPistas();
-                } else {
-                    JOptionPane.showMessageDialog(this,
-                        "No hay pistas disponibles o no se puede revelar más celdas.",
-                        "Sin pistas",
-                        JOptionPane.INFORMATION_MESSAGE);
+        botonNuevoJuego.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                if (controlador != null) {
+                    controlador.nuevoJuego();
                 }
             }
         });
         
-        selectorNivel.addActionListener(e -> {
-            NivelDificultad nivelSeleccionado = (NivelDificultad) selectorNivel.getSelectedItem();
-            cambiarNivel(nivelSeleccionado);
+        botonReiniciar.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                if (controlador != null) {
+                    controlador.reiniciarJuego();
+                }
+            }
+        });
+        
+        botonSolucion.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                if (controlador != null) {
+                    controlador.mostrarSolucion();
+                }
+            }
+        });
+        
+        botonInsertarSolucion.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                if (controlador != null) {
+                    controlador.verificarSolucion();
+                }
+            }
+        });
+        
+        botonDarPista.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                if (controlador != null) {
+                    boolean pistaRevelada = controlador.solicitarPista();
+                    if (pistaRevelada) {
+                        actualizarContadorPistas();
+                    } else {
+                        JOptionPane.showMessageDialog(VistaNonogramaWindowBuilderNuevo.this,
+                            "No hay pistas disponibles o no se puede revelar más celdas.",
+                            "Sin pistas",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    }
+                }
+            }
+        });
+        
+        selectorNivel.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                NivelDificultad nivelSeleccionado = (NivelDificultad) selectorNivel.getSelectedItem();
+                cambiarNivel(nivelSeleccionado);
+            }
         });
     }
     
