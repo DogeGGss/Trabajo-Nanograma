@@ -2,6 +2,7 @@ package com.nonogram.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 // Modelo del Nonograma que implementa la lógica del juego.
 // 
@@ -410,24 +411,33 @@ public class ModeloNonograma {
         if (pistasDisponibles <= 0) {
             return false; // No hay pistas disponibles
         }
+        else {
         
-        // Buscar una celda no revelada para mostrar como pista
-        for (int fila = 0; fila < tamañoGrilla; fila++) {
-            for (int columna = 0; columna < tamañoGrilla; columna++) {
-                if (!celdasReveladas[fila][columna] && 
-                    grillaJuego[fila][columna] != grillaSolucion[fila][columna]) {
+        	// Buscar una celda no revelada para mostrar como pista
+        	boolean pista = false;
+        	Random rand = new Random();
+
+        	
+        	while(!pista) {
+        		int n = tamañoGrilla;           // cantidad de filas
+            	int fila = rand.nextInt(n);      // índice aleatorio de fila
+            	int columna = rand.nextInt(n);   // índice aleatorio de columna
+            	if (!celdasReveladas[fila][columna] && 
+                        grillaJuego[fila][columna] != grillaSolucion[fila][columna]) {
+                	// Revelar esta celda como pista
+                		grillaJuego[fila][columna] = grillaSolucion[fila][columna];
+                		celdasReveladas[fila][columna] = true;
+                		pistasDisponibles--;
+                		pista = true;
                     
-                    // Revelar esta celda como pista
-                    grillaJuego[fila][columna] = grillaSolucion[fila][columna];
-                    celdasReveladas[fila][columna] = true;
-                    pistasDisponibles--;
-                    
-                    // Notificar cambios
-                    notificarObservadores();
-                    return true;
-                }
-            }
+                		// Notificar cambios
+                		notificarObservadores();
+                		return true;
+                	}
+        	}
+        	
         }
+        
         
         return false; // No se pudo revelar ninguna pista
     }
