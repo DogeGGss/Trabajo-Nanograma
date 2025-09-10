@@ -47,13 +47,13 @@ public class ControladorNonograma {
         EstadoCelda estadoActual = modelo.obtenerEstadoCelda(fila, columna);
         EstadoCelda nuevoEstado;
         
-        // Clic: cicla entre VACIA -> LLENA -> VACIA
+        // Clic: cicla entre MARCADA -> LLENA -> MARCADA
         switch (estadoActual) {
-            case VACIA:
+            case MARCADA:
                 nuevoEstado = EstadoCelda.LLENA;
                 break;
             case LLENA:
-                nuevoEstado = EstadoCelda.VACIA;
+                nuevoEstado = EstadoCelda.MARCADA;
                 break;
             default:
                 nuevoEstado = EstadoCelda.LLENA;
@@ -65,6 +65,8 @@ public class ControladorNonograma {
     // Inicia un nuevo juego.
     public void nuevoJuego() {
         modelo.nuevoJuego();
+        // Deshabilitar el botón de ver solución en nuevo juego
+        vista.deshabilitarBotonSolucion();
     }
     
     // Reinicia el juego actual.
@@ -99,6 +101,8 @@ public class ControladorNonograma {
     // @param nivel Nuevo nivel de dificultad
     public void cambiarNivel(NivelDificultad nivel) {
         modelo.cambiarNivel(nivel);
+        // Deshabilitar el botón de ver solución al cambiar nivel
+        vista.deshabilitarBotonSolucion();
     }
     
     // Obtiene el número de pistas disponibles.

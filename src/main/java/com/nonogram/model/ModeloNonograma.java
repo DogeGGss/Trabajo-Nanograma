@@ -95,7 +95,7 @@ public class ModeloNonograma {
         
         for (int fila = 0; fila < tamañoGrilla; fila++) {
             for (int columna = 0; columna < tamañoGrilla; columna++) {
-                grillaJuego[fila][columna] = EstadoCelda.VACIA;
+                grillaJuego[fila][columna] = EstadoCelda.MARCADA; // Las celdas vacías muestran X
                 grillaSolucion[fila][columna] = EstadoCelda.VACIA;
             }
         }
@@ -105,7 +105,7 @@ public class ModeloNonograma {
     private void limpiarGrillaJugador() {
         for (int fila = 0; fila < tamañoGrilla; fila++) {
             for (int columna = 0; columna < tamañoGrilla; columna++) {
-                grillaJuego[fila][columna] = EstadoCelda.VACIA;
+                grillaJuego[fila][columna] = EstadoCelda.MARCADA; // Las celdas vacías muestran X
             }
         }
     }
@@ -166,37 +166,10 @@ public class ModeloNonograma {
                 generarPuzzleConBordesYCentro();
                 break;
         }
-        
-        // Asegurar que el puzzle tenga al menos algunas celdas llenas
-        if (contarCeldasLlenas() < tamañoGrilla) {
-            generarPuzzleConFormasGeometricas(); // Fallback
-        }
-        
-        // Asegurar que el puzzle sea solucionable (no demasiado denso ni demasiado vacío)
-        int celdasLlenas = contarCeldasLlenas();
-        int totalCeldas = tamañoGrilla * tamañoGrilla;
-        double densidad = (double) celdasLlenas / totalCeldas;
-        
-        // Si la densidad es muy baja o muy alta, regenerar
-        if (densidad < 0.1 || densidad > 0.8) {
-            generarSolucionAleatoria(); // Recursión limitada
-        }
     }
     
 
     
-    // Cuenta el número de celdas llenas en la solución
-    private int contarCeldasLlenas() {
-        int contador = 0;
-        for (int fila = 0; fila < tamañoGrilla; fila++) {
-            for (int col = 0; col < tamañoGrilla; col++) {
-                if (grillaSolucion[fila][col] == EstadoCelda.LLENA) {
-                    contador++;
-                }
-            }
-        }
-        return contador;
-    }
     
     // Algoritmo 1: Genera puzzles con formas geométricas básicas
     private void generarPuzzleConFormasGeometricas() {
@@ -229,6 +202,9 @@ public class ModeloNonograma {
                 }
             }
         }
+        
+        // Asegurar que cada fila y columna tenga al menos una celda llena y una vacía
+        asegurarValidezPuzzle();
     }
     
     // Algoritmo 2: Genera puzzles con patrones simétricos
@@ -246,6 +222,9 @@ public class ModeloNonograma {
                 }
             }
         }
+        
+        // Asegurar que cada fila y columna tenga al menos una celda llena y una vacía
+        asegurarValidezPuzzle();
     }
     
     // Algoritmo 3: Genera puzzles con secuencias lógicas
@@ -263,6 +242,9 @@ public class ModeloNonograma {
                 }
             }
         }
+        
+        // Asegurar que cada fila y columna tenga al menos una celda llena y una vacía
+        asegurarValidezPuzzle();
     }
     
     // Algoritmo 4: Genera puzzles con densidad variable
@@ -279,6 +261,9 @@ public class ModeloNonograma {
                 }
             }
         }
+        
+        // Asegurar que cada fila y columna tenga al menos una celda llena y una vacía
+        asegurarValidezPuzzle();
     }
     
     // Algoritmo 5: Genera puzzles con bordes y centro
@@ -301,6 +286,9 @@ public class ModeloNonograma {
                 }
             }
         }
+        
+        // Asegurar que cada fila y columna tenga al menos una celda llena y una vacía
+        asegurarValidezPuzzle();
     }
     
     // Verifica si un número es primo
@@ -317,7 +305,54 @@ public class ModeloNonograma {
         return true;
     }
     
-    // ... existing code ...
+    // Asegura que cada fila y columna tenga al menos una celda llena y una vacía
+    private void asegurarValidezPuzzle() {
+        // Verificar y arreglar filas
+        for (int fila = 0; fila < tamañoGrilla; fila++) {
+            int celdasLlenas = 0;
+            int celdasVacias = 0;
+            
+            for (int col = 0; col < tamañoGrilla; col++) {
+                if (grillaSolucion[fila][col] == EstadoCelda.LLENA) {
+                    celdasLlenas++;
+                } else {
+                    celdasVacias++;
+                }
+            }
+            
+            // Si la fila está completamente vacía, agregar una celda llena
+            if (celdasLlenas == 0) {
+                grillaSolucion[fila][tamañoGrilla / 2] = EstadoCelda.LLENA;
+            }
+            // Si la fila está completamente llena, vaciar una celda
+            else if (celdasVacias == 0) {
+                grillaSolucion[fila][tamañoGrilla / 2] = EstadoCelda.VACIA;
+            }
+        }
+        
+        // Verificar y arreglar columnas
+        for (int col = 0; col < tamañoGrilla; col++) {
+            int celdasLlenas = 0;
+            int celdasVacias = 0;
+            
+            for (int fila = 0; fila < tamañoGrilla; fila++) {
+                if (grillaSolucion[fila][col] == EstadoCelda.LLENA) {
+                    celdasLlenas++;
+                } else {
+                    celdasVacias++;
+                }
+            }
+            
+            // Si la columna está completamente vacía, agregar una celda llena
+            if (celdasLlenas == 0) {
+                grillaSolucion[tamañoGrilla / 2][col] = EstadoCelda.LLENA;
+            }
+            // Si la columna está completamente llena, vaciar una celda
+            else if (celdasVacias == 0) {
+                grillaSolucion[tamañoGrilla / 2][col] = EstadoCelda.VACIA;
+            }
+        }
+    }
     
     // Genera las pistas (hints) basadas en la solución.
     // Las pistas indican las longitudes de las secuencias de celdas llenas.
@@ -392,7 +427,7 @@ public class ModeloNonograma {
     public boolean verificarSolucion() {
         for (int fila = 0; fila < tamañoGrilla; fila++) {
             for (int columna = 0; columna < tamañoGrilla; columna++) {
-                if (grillaJuego[fila][columna] != grillaSolucion[fila][columna]) {
+                if (!esEstadoCorrecto(fila, columna)) {
                     return false;
                 }
             }
@@ -423,7 +458,7 @@ public class ModeloNonograma {
             	int fila = rand.nextInt(n);      // índice aleatorio de fila
             	int columna = rand.nextInt(n);   // índice aleatorio de columna
             	if (!celdasReveladas[fila][columna] && 
-                        grillaJuego[fila][columna] != grillaSolucion[fila][columna]) {
+                        !esEstadoCorrecto(fila, columna)) {
                 	// Revelar esta celda como pista
                 		grillaJuego[fila][columna] = grillaSolucion[fila][columna];
                 		celdasReveladas[fila][columna] = true;
@@ -440,6 +475,23 @@ public class ModeloNonograma {
         
         
         return false; // No se pudo revelar ninguna pista
+    }
+    
+    // Verifica si el estado actual de una celda coincide con la solución
+    private boolean esEstadoCorrecto(int fila, int columna) {
+        EstadoCelda estadoJuego = grillaJuego[fila][columna];
+        EstadoCelda estadoSolucion = grillaSolucion[fila][columna];
+        
+        // Si la solución es VACIA, el juego debe ser MARCADA (X)
+        if (estadoSolucion == EstadoCelda.VACIA) {
+            return estadoJuego == EstadoCelda.MARCADA;
+        }
+        // Si la solución es LLENA, el juego debe ser LLENA
+        else if (estadoSolucion == EstadoCelda.LLENA) {
+            return estadoJuego == EstadoCelda.LLENA;
+        }
+        
+        return false;
     }
     
     // Obtiene el estado actual de una celda.
@@ -557,6 +609,13 @@ public class ModeloNonograma {
         // Redimensionar el array de celdas reveladas
         this.celdasReveladas = new boolean[tamañoGrilla][tamañoGrilla];
         
+        // Asegurar que todas las celdas estén marcadas como no reveladas
+        for (int fila = 0; fila < tamañoGrilla; fila++) {
+            for (int columna = 0; columna < tamañoGrilla; columna++) {
+                celdasReveladas[fila][columna] = false;
+            }
+        }
+        
         // Reinicializar las grillas con el nuevo tamaño
         this.grillaJuego = new EstadoCelda[tamañoGrilla][tamañoGrilla];
         this.grillaSolucion = new EstadoCelda[tamañoGrilla][tamañoGrilla];
@@ -564,7 +623,7 @@ public class ModeloNonograma {
         // Inicializar grillas vacías
         for (int fila = 0; fila < tamañoGrilla; fila++) {
             for (int columna = 0; columna < tamañoGrilla; columna++) {
-                grillaJuego[fila][columna] = EstadoCelda.VACIA;
+                grillaJuego[fila][columna] = EstadoCelda.MARCADA; // Las celdas vacías muestran X
                 grillaSolucion[fila][columna] = EstadoCelda.VACIA;
             }
         }

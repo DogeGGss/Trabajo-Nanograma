@@ -53,10 +53,12 @@ public class VistaNonogramaWindowBuilderNuevo extends JFrame implements VistaNon
         
         selectorNivel = new JComboBox<>(NivelDificultad.values());
         selectorNivel.setSelectedItem(NivelDificultad.FACIL);
+        selectorNivel.setFocusable(false); // Deshabilitar focus para evitar subrayado
         
         botonNuevoJuego = new JButton("Nuevo Juego");
         botonReiniciar = new JButton("Reiniciar");
         botonSolucion = new JButton("Ver Solución");
+        botonSolucion.setEnabled(false); // Deshabilitado inicialmente
         botonInsertarSolucion = new JButton("Insertar Solución");
         botonDarPista = new JButton("Dar Pista (3)");
         
@@ -150,7 +152,7 @@ public class VistaNonogramaWindowBuilderNuevo extends JFrame implements VistaNon
         setLocationRelativeTo(null);
     }
     
-    @SuppressWarnings("unused")    private void configurarManejadoresEventos() {
+    private void configurarManejadoresEventos() {
         int tamañoActual = botonesCelda != null ? botonesCelda.length : 5;
         
         for (int fila = 0; fila < tamañoActual; fila++) {
@@ -350,7 +352,8 @@ public class VistaNonogramaWindowBuilderNuevo extends JFrame implements VistaNon
     private void actualizarBotonCelda(JButton boton, EstadoCelda estado, boolean esPista) {
         actualizarBotonCelda(boton, estado);
         
-        if (esPista && estado == EstadoCelda.LLENA) {
+        if (esPista) {
+            // Las pistas reveladas tienen borde azul
             boton.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(Color.BLUE, 3),
                 BorderFactory.createLineBorder(Color.BLACK, 1)
@@ -402,6 +405,9 @@ public class VistaNonogramaWindowBuilderNuevo extends JFrame implements VistaNon
             "¡Has perdido! La solución no es correcta.",
             "Derrota",
             JOptionPane.WARNING_MESSAGE);
+        
+        // Habilitar el botón de ver solución después de perder
+        botonSolucion.setEnabled(true);
     }
     
     @Override
@@ -460,6 +466,16 @@ public class VistaNonogramaWindowBuilderNuevo extends JFrame implements VistaNon
         }
     }
     
+    // Deshabilita el botón de ver solución (usado en nuevo juego)
+    public void deshabilitarBotonSolucion() {
+        botonSolucion.setEnabled(false);
+    }
+    
+    // Habilita el botón de ver solución (usado después de perder)
+    public void habilitarBotonSolucion() {
+        botonSolucion.setEnabled(true);
+    }
+    
     private void inicializarComponentesDinamicos(NivelDificultad nivel) {
         int tamaño = nivel.obtenerTamañoGrilla();
         int tamañoCelda = obtenerTamañoCelda();
@@ -475,6 +491,7 @@ public class VistaNonogramaWindowBuilderNuevo extends JFrame implements VistaNon
                 botonesCelda[fila][columna].setPreferredSize(new Dimension(tamañoCelda, tamañoCelda));
                 botonesCelda[fila][columna].setBackground(Color.WHITE);
                 botonesCelda[fila][columna].setBorder(BorderFactory.createLineBorder(Color.BLACK));
+                botonesCelda[fila][columna].setFocusable(false); // Deshabilitar focus para evitar el cuadro azul
             }
         }
         

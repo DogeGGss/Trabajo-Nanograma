@@ -38,4 +38,10 @@ public interface VistaNonograma {
     
     // Actualiza la información del juego (movimientos, pistas, etc.).
     void actualizarInformacionJuego();
+    
+    // Deshabilita el botón de ver solución (usado en nuevo juego).
+    void deshabilitarBotonSolucion();
+    
+    // Habilita el botón de ver solución (usado después de perder).
+    void habilitarBotonSolucion();
 }
