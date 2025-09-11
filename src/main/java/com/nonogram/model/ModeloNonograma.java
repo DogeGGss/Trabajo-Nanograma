@@ -26,7 +26,7 @@ public class ModeloNonograma {
     
     // Nuevas funcionalidades
     private int pistasDisponibles;            // Número de pistas disponibles
-    private boolean[][] celdasReveladas;      // Celdas que han sido reveladas como pista
+    private boolean[][] celdasReveladas;      // Celdas que han sido reveladas como/por pista
     private NivelDificultad nivelActual;      // Nivel de dificultad actual
     
     // Constructor del modelo del Nonograma.
@@ -469,6 +469,9 @@ public class ModeloNonograma {
                 		notificarObservadores();
                 		return true;
                 	}
+            	else if(celdasEnJuegoIgualGrillaSolucion()) {
+            		return false;
+            	}
         	}
         	
         }
@@ -477,7 +480,19 @@ public class ModeloNonograma {
         return false; // No se pudo revelar ninguna pista
     }
     
-    // Verifica si el estado actual de una celda coincide con la solución
+ // Devuelve true si **todas** las celdas del jugador coinciden con la solución
+    private boolean celdasEnJuegoIgualGrillaSolucion() {
+        for (int fila = 0; fila < tamañoGrilla; fila++) {
+            for (int columna = 0; columna < tamañoGrilla; columna++) {
+                if (!esEstadoCorrecto(fila, columna)) {
+                    return false; // hay al menos una celda incorrecta
+                }
+            }
+        }
+        return true; // todas las celdas están correctas
+    }
+
+	// Verifica si el estado actual de una celda coincide con la solución
     private boolean esEstadoCorrecto(int fila, int columna) {
         EstadoCelda estadoJuego = grillaJuego[fila][columna];
         EstadoCelda estadoSolucion = grillaSolucion[fila][columna];
