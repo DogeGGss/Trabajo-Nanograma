@@ -28,6 +28,7 @@ public class ModeloNonograma {
     private int pistasDisponibles;            // Número de pistas disponibles
     private boolean[][] celdasReveladas;      // Celdas que han sido reveladas como/por pista
     private NivelDificultad nivelActual;      // Nivel de dificultad actual
+    GeneradorDePuzzles generador;
     
     // Constructor del modelo del Nonograma.
     // 
@@ -43,6 +44,9 @@ public class ModeloNonograma {
         
         // Inicializar grillas
         inicializarGrillas();
+        
+        //inicializo el generador
+        this.generador = new GeneradorDePuzzles();
     }
     
     // Constructor por defecto con grilla 5x5.
@@ -112,8 +116,12 @@ public class ModeloNonograma {
     
     // Genera un nuevo puzzle automáticamente.
     public void nuevoJuego() {
-        // Generar solución del puzzle
-        generarSolucionAleatoria();
+    	 // Generar solución del puzzle
+        //generarSolucionAleatoria();
+    	if (generador == null) {
+            generador = new GeneradorDePuzzles();
+        }
+        generador.generarSolucionAleatoria(this);
         
         // Generar pistas basadas en la solución
         generarPistas();
@@ -136,223 +144,7 @@ public class ModeloNonograma {
     
     // ... existing code ...
     
-    // Genera una solución aleatoria válida para el Nonograma.
-    // Utiliza diferentes algoritmos para crear puzzles variados y solucionables.
-    private void generarSolucionAleatoria() {
-        // Limpiar solución
-        for (int fila = 0; fila < tamañoGrilla; fila++) {
-            for (int columna = 0; columna < tamañoGrilla; columna++) {
-                grillaSolucion[fila][columna] = EstadoCelda.VACIA;
-            }
-        }
-        
-        // Elegir un algoritmo aleatorio según el tamaño
-        int algoritmo = (int)(Math.random() * 5); // 0-4 algoritmos diferentes
-        
-        switch (algoritmo) {
-            case 0:
-                generarPuzzleConFormasGeometricas();
-                break;
-            case 1:
-                generarPuzzleConPatronesSimetricos();
-                break;
-            case 2:
-                generarPuzzleConSecuenciasLogicas();
-                break;
-            case 3:
-                generarPuzzleConDensidadVariable();
-                break;
-            case 4:
-                generarPuzzleConBordesYCentro();
-                break;
-        }
-    }
-    
-
-    
-    
-    // Algoritmo 1: Genera puzzles con formas geométricas básicas
-    private void generarPuzzleConFormasGeometricas() {
-        int centro = tamañoGrilla / 2;
-        
-        // Crear diferentes formas según el tamaño
-        if (tamañoGrilla <= 5) {
-            // Cuadrado en el centro
-            for (int fila = centro - 1; fila <= centro + 1; fila++) {
-                for (int col = centro - 1; col <= centro + 1; col++) {
-                    if (fila >= 0 && fila < tamañoGrilla && col >= 0 && col < tamañoGrilla) {
-                        grillaSolucion[fila][col] = EstadoCelda.LLENA;
-                    }
-                }
-            }
-        } else if (tamañoGrilla <= 10) {
-            // Cruz
-            for (int i = 0; i < tamañoGrilla; i++) {
-                grillaSolucion[centro][i] = EstadoCelda.LLENA;
-                grillaSolucion[i][centro] = EstadoCelda.LLENA;
-            }
-        } else {
-            // Diamante
-            for (int fila = 0; fila < tamañoGrilla; fila++) {
-                for (int col = 0; col < tamañoGrilla; col++) {
-                    int distancia = Math.abs(fila - centro) + Math.abs(col - centro);
-                    if (distancia <= tamañoGrilla / 4) {
-                        grillaSolucion[fila][col] = EstadoCelda.LLENA;
-                    }
-                }
-            }
-        }
-        
-        // Asegurar que cada fila y columna tenga al menos una celda llena y una vacía
-        asegurarValidezPuzzle();
-    }
-    
-    // Algoritmo 2: Genera puzzles con patrones simétricos
-    private void generarPuzzleConPatronesSimetricos() {
-        // Patrón simétrico horizontal y vertical
-        for (int fila = 0; fila < tamañoGrilla; fila++) {
-            for (int col = 0; col < tamañoGrilla; col++) {
-                // Simetría horizontal y vertical
-                if ((fila + col) % 2 == 0 && (fila < tamañoGrilla / 2 || col < tamañoGrilla / 2)) {
-                    grillaSolucion[fila][col] = EstadoCelda.LLENA;
-                }
-                // Simetría diagonal
-                if (fila == col || fila == tamañoGrilla - 1 - col) {
-                    grillaSolucion[fila][col] = EstadoCelda.LLENA;
-                }
-            }
-        }
-        
-        // Asegurar que cada fila y columna tenga al menos una celda llena y una vacía
-        asegurarValidezPuzzle();
-    }
-    
-    // Algoritmo 3: Genera puzzles con secuencias lógicas
-    private void generarPuzzleConSecuenciasLogicas() {
-        // Secuencias basadas en patrones matemáticos
-        for (int fila = 0; fila < tamañoGrilla; fila++) {
-            for (int col = 0; col < tamañoGrilla; col++) {
-                // Patrón de Fibonacci
-                if ((fila + col) % 3 == 0 && (fila * col) % 2 == 0) {
-                    grillaSolucion[fila][col] = EstadoCelda.LLENA;
-                }
-                // Patrón de números primos
-                if (esPrimo(fila + col) && (fila + col) > 1) {
-                    grillaSolucion[fila][col] = EstadoCelda.LLENA;
-                }
-            }
-        }
-        
-        // Asegurar que cada fila y columna tenga al menos una celda llena y una vacía
-        asegurarValidezPuzzle();
-    }
-    
-    // Algoritmo 4: Genera puzzles con densidad variable
-    private void generarPuzzleConDensidadVariable() {
-        // Mayor densidad en el centro, menor en los bordes
-        for (int fila = 0; fila < tamañoGrilla; fila++) {
-            for (int col = 0; col < tamañoGrilla; col++) {
-                double distanciaAlCentro = Math.sqrt(Math.pow(fila - tamañoGrilla/2.0, 2) + 
-                                                   Math.pow(col - tamañoGrilla/2.0, 2));
-                double probabilidad = Math.max(0.1, 1.0 - distanciaAlCentro / (tamañoGrilla/2.0));
-                
-                if (Math.random() < probabilidad) {
-                    grillaSolucion[fila][col] = EstadoCelda.LLENA;
-                }
-            }
-        }
-        
-        // Asegurar que cada fila y columna tenga al menos una celda llena y una vacía
-        asegurarValidezPuzzle();
-    }
-    
-    // Algoritmo 5: Genera puzzles con bordes y centro
-    private void generarPuzzleConBordesYCentro() {
-        // Bordes
-        for (int i = 0; i < tamañoGrilla; i++) {
-            grillaSolucion[0][i] = EstadoCelda.LLENA;
-            grillaSolucion[tamañoGrilla-1][i] = EstadoCelda.LLENA;
-            grillaSolucion[i][0] = EstadoCelda.LLENA;
-            grillaSolucion[i][tamañoGrilla-1] = EstadoCelda.LLENA;
-        }
-        
-        // Centro
-        int centro = tamañoGrilla / 2;
-        int radio = Math.max(1, tamañoGrilla / 6);
-        for (int fila = centro - radio; fila <= centro + radio; fila++) {
-            for (int col = centro - radio; col <= centro + radio; col++) {
-                if (fila >= 0 && fila < tamañoGrilla && col >= 0 && col < tamañoGrilla) {
-                    grillaSolucion[fila][col] = EstadoCelda.LLENA;
-                }
-            }
-        }
-        
-        // Asegurar que cada fila y columna tenga al menos una celda llena y una vacía
-        asegurarValidezPuzzle();
-    }
-    
-    // Verifica si un número es primo
-    private boolean esPrimo(int numero) {
-        if (numero <= 1) return false;
-        if (numero <= 3) return true;
-        if (numero % 2 == 0 || numero % 3 == 0) return false;
-        
-        for (int i = 5; i * i <= numero; i += 6) {
-            if (numero % i == 0 || numero % (i + 2) == 0) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
-    // Asegura que cada fila y columna tenga al menos una celda llena y una vacía
-    private void asegurarValidezPuzzle() {
-        // Verificar y arreglar filas
-        for (int fila = 0; fila < tamañoGrilla; fila++) {
-            int celdasLlenas = 0;
-            int celdasVacias = 0;
-            
-            for (int col = 0; col < tamañoGrilla; col++) {
-                if (grillaSolucion[fila][col] == EstadoCelda.LLENA) {
-                    celdasLlenas++;
-                } else {
-                    celdasVacias++;
-                }
-            }
-            
-            // Si la fila está completamente vacía, agregar una celda llena
-            if (celdasLlenas == 0) {
-                grillaSolucion[fila][tamañoGrilla / 2] = EstadoCelda.LLENA;
-            }
-            // Si la fila está completamente llena, vaciar una celda
-            else if (celdasVacias == 0) {
-                grillaSolucion[fila][tamañoGrilla / 2] = EstadoCelda.VACIA;
-            }
-        }
-        
-        // Verificar y arreglar columnas
-        for (int col = 0; col < tamañoGrilla; col++) {
-            int celdasLlenas = 0;
-            int celdasVacias = 0;
-            
-            for (int fila = 0; fila < tamañoGrilla; fila++) {
-                if (grillaSolucion[fila][col] == EstadoCelda.LLENA) {
-                    celdasLlenas++;
-                } else {
-                    celdasVacias++;
-                }
-            }
-            
-            // Si la columna está completamente vacía, agregar una celda llena
-            if (celdasLlenas == 0) {
-                grillaSolucion[tamañoGrilla / 2][col] = EstadoCelda.LLENA;
-            }
-            // Si la columna está completamente llena, vaciar una celda
-            else if (celdasVacias == 0) {
-                grillaSolucion[tamañoGrilla / 2][col] = EstadoCelda.VACIA;
-            }
-        }
-    }
+   
     
     // Genera las pistas (hints) basadas en la solución.
     // Las pistas indican las longitudes de las secuencias de celdas llenas.
@@ -541,6 +333,26 @@ public class ModeloNonograma {
         return EstadoCelda.VACIA;
     }
     
+    //creo que esto esta repetido los metodos get son los mismos que obtenerEstado...
+    ///////////////////////////////////////////////////////////////////////////////
+    
+    public void setGrillaJuego(int fila,int columna,EstadoCelda celda) {
+		this.grillaJuego[fila][columna] =celda ;
+	}
+    
+    public void setGrillaSolucion(int fila,int columna,EstadoCelda celda) {
+		this.grillaSolucion[fila][columna] = celda ;
+	}
+    
+
+	public EstadoCelda getGrillaJuego(int fila,int col) {
+		return grillaJuego[fila][col];
+	}
+
+	public EstadoCelda getGrillaSolucion(int fila, int col) {
+		return grillaSolucion[fila][col];
+	}
+    ///////////////////////////////////////////////////////////////////////////////////
 
     
 
@@ -644,7 +456,7 @@ public class ModeloNonograma {
         }
         
         // Generar la solución primero
-        generarSolucionAleatoria();
+        generador.generarSolucionAleatoria(this);
         
         // Luego generar las pistas basadas en la solución
         generarPistas();
