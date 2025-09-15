@@ -28,7 +28,7 @@ public class ModeloNonograma {
     private int pistasDisponibles;            // Número de pistas disponibles
     private boolean[][] celdasReveladas;      // Celdas que han sido reveladas como/por pista
     private NivelDificultad nivelActual;      // Nivel de dificultad actual
-    GeneradorDePuzzles generador;
+    private final GeneradorDePuzzles generador;
     
     // Constructor del modelo del Nonograma.
     // 
@@ -116,12 +116,9 @@ public class ModeloNonograma {
     
     // Genera un nuevo puzzle automáticamente.
     public void nuevoJuego() {
-    	 // Generar solución del puzzle
-        //generarSolucionAleatoria();
-    	if (generador == null) {
-            generador = new GeneradorDePuzzles();
-        }
-        generador.generarSolucionAleatoria(this);
+        // Generar solución y aplicarla
+        EstadoCelda[][] nuevaSolucion = generador.generarSolucionAleatoria(tamañoGrilla);
+        aplicarSolucion(nuevaSolucion);
         
         // Generar pistas basadas en la solución
         generarPistas();
@@ -142,7 +139,18 @@ public class ModeloNonograma {
         notificarObservadores();
     }
     
-    // ... existing code ...
+
+    // Aplica una solución completa validando tamaño
+    private void aplicarSolucion(EstadoCelda[][] nuevaSolucion) {
+        if (nuevaSolucion == null || nuevaSolucion.length != tamañoGrilla || nuevaSolucion[0].length != tamañoGrilla) {
+            throw new IllegalArgumentException("Tamaño de solución inválido");
+        }
+        for (int fila = 0; fila < tamañoGrilla; fila++) {
+            for (int columna = 0; columna < tamañoGrilla; columna++) {
+                grillaSolucion[fila][columna] = nuevaSolucion[fila][columna];
+            }
+        }
+    }
     
    
     
@@ -333,26 +341,6 @@ public class ModeloNonograma {
         return EstadoCelda.VACIA;
     }
     
-    //creo que esto esta repetido los metodos get son los mismos que obtenerEstado...
-    ///////////////////////////////////////////////////////////////////////////////
-    
-    public void setGrillaJuego(int fila,int columna,EstadoCelda celda) {
-		this.grillaJuego[fila][columna] =celda ;
-	}
-    
-    public void setGrillaSolucion(int fila,int columna,EstadoCelda celda) {
-		this.grillaSolucion[fila][columna] = celda ;
-	}
-    
-
-	public EstadoCelda getGrillaJuego(int fila,int col) {
-		return grillaJuego[fila][col];
-	}
-
-	public EstadoCelda getGrillaSolucion(int fila, int col) {
-		return grillaSolucion[fila][col];
-	}
-    ///////////////////////////////////////////////////////////////////////////////////
 
     
 
@@ -390,7 +378,7 @@ public class ModeloNonograma {
     public void reiniciarJuego() {
         limpiarGrillaJugador();
         estadoJuego = EstadoJuego.JUGANDO;
-        pistasDisponibles = 3;
+        pistasDisponibles = (nivelActual != null ? nivelActual.obtenerPistasDisponibles() : 3);
         limpiarCeldasReveladas();
         notificarObservadores();
     }
@@ -456,7 +444,8 @@ public class ModeloNonograma {
         }
         
         // Generar la solución primero
-        generador.generarSolucionAleatoria(this);
+        EstadoCelda[][] nuevaSolucion = generador.generarSolucionAleatoria(tamañoGrilla);
+        aplicarSolucion(nuevaSolucion);
         
         // Luego generar las pistas basadas en la solución
         generarPistas();
@@ -469,16 +458,7 @@ public class ModeloNonograma {
         
         estadoJuego = EstadoJuego.JUGANDO;
         
-        // Notificar observadores dos veces para asegurar que se actualice la vista
-        notificarObservadores();
-        
-        // Pequeño delay para asegurar que la vista se actualice completamente
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-        
+        // Notificar observadores una sola vez
         notificarObservadores();
     }
     
